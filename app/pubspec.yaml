@@ -1,0 +1,30 @@
+name: athena
+description: Mobile app for the athena smart home system
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  firebase_crashlytics: ^0.1.2+5
+  shared_preferences: ^0.5.6+1
+  validators: ^2.0.0+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+
+  fonts:
+    - family: Library 3 am
+      fonts:
+        - asset: assets/fonts/Library 3 am.otf
