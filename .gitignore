@@ -180,3 +180,5 @@ doc/api/
 *.exe
 *.out
 *.app
+
+.idea/
