@@ -29,9 +29,9 @@ class Login(View):
             logger.info(f'{user} logged in from {request.META["REMOTE_ADDR"]}')
             at, rt, aID, rID = createTokens(user)
             atm = AccessToken.objects.create(user=user, aID=aID)
-            rtm = RefreshToken.objects.create(aID=atm, rID=rID,
-                                              expireAt=timezone.now() + datetime.timedelta(days=RTEXP),
-                                              deviceName='Unknown')
+            RefreshToken.objects.create(aID=atm, rID=rID,
+                                        expireAt=timezone.now() + datetime.timedelta(days=RTEXP),
+                                        deviceName='Unknown')
             return JsonResponse({'access_token': at, 'expires_in': ATEXP, 'refresh_token': rt})
         logger.warning(
             f'Failed login attempt from {request.META["REMOTE_ADDR"]}, the provided username was: {username}')
