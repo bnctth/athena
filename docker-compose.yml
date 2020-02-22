@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  web:
+    image: bnctth/athena
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/home/athena/web/static
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - web
+    volumes:
+      - static_volume:/home/athena/web/static
+
+volumes:
+  postgres_data:
+  static_volume:
+

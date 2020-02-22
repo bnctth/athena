@@ -10,6 +10,7 @@ then
 
     echo "PostgreSQL started"
     python3 manage.py migrate
+    python3 manage.py collectstatic --no-input --clear
 fi
 
 exec "$@"

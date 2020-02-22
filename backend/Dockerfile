@@ -36,6 +36,7 @@ RUN addgroup -S athena && adduser -S athena -G athena
 ENV HOME=/home/athena
 ENV ATHENA_HOME=/home/athena/web
 RUN mkdir $ATHENA_HOME
+RUN mkdir $ATHENA_HOME/static
 WORKDIR $ATHENA_HOME
 
 # install dependencies
