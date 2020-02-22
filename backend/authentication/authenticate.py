@@ -1,10 +1,14 @@
+import logging
 import uuid
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 import jwt
 
 from .models import AccessToken
+
+logger = logging.getLogger(__name__)
 
 
 class TokenBackend(BaseBackend):
@@ -12,11 +16,14 @@ class TokenBackend(BaseBackend):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(pk=payload["userID"])
-            if user.is_active and AccessToken.objects.filter(aID=uuid.UUID(payload['jti'])).exists():
+            if user.is_active and AccessToken.objects.filter(user=user, aID=uuid.UUID(payload['jti'])).exists():
                 return user
-        except Exception as e:
-            print(e)
-            pass
+        except jwt.ExpiredSignature:
+            logger.warning(f'Expired access token provided from {request.META["REMOTE_ADDR"]}')
+        except (jwt.InvalidAlgorithmError, jwt.InvalidSignatureError, jwt.DecodeError,):
+            logger.warning(f'Invalid access token provided from {request.META["REMOTE_ADDR"]}')
+        except ObjectDoesNotExist:
+            logger.warning(f'Token for non-existent user provided from {request.META["REMOTE_ADDR"]}')
         return None
 
     def get_user(self, user_id):

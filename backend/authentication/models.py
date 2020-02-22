@@ -11,5 +11,5 @@ class AccessToken(models.Model):
 class RefreshToken(models.Model):
     expireAt = models.DateTimeField()
     rID = models.UUIDField()
-    aID = models.ForeignKey(AccessToken, on_delete=models.CASCADE)
+    aID = models.OneToOneField(AccessToken, on_delete=models.CASCADE)
     deviceName = models.CharField(max_length=100)
