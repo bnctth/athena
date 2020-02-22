@@ -7,7 +7,7 @@ matrix:
         pip3 install -r backend/requirements.txt
       before_script:
         - cd backend
-      script: manage.py test
+      script: ./manage.py test
       cache: pip
     - addons:
         apt:
