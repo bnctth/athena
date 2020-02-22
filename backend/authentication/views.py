@@ -44,12 +44,14 @@ def createTokens(user):
     atPayload = {
         "exp": timezone.now() + datetime.timedelta(seconds=ATEXP),
         "userID": user.id,
-        "jti": str(aID)
+        "jti": str(aID),
+        "type": "access_token",
     }
     at = jwt.encode(atPayload, settings.SECRET_KEY, algorithm='HS256').decode()
     rtPayload = {
         'exp': timezone.now() + datetime.timedelta(days=RTEXP),
         'jti': str(rID),
+        'type': 'refresh_token',
     }
     rt = jwt.encode(rtPayload, settings.SECRET_KEY, algorithm='HS256').decode()
     return at, rt, aID, rID
