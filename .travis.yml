@@ -5,7 +5,9 @@ matrix:
       python: 3.7
       install:
         pip3 install -r backend/requirements.txt
-      script: backend/manage.py test
+      before_script:
+        - cd backend
+      script: manage.py test
       cache: pip
     - addons:
         apt:
