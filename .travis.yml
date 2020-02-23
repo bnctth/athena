@@ -12,7 +12,7 @@ matrix:
         provider: script
         script: bash docker_push
         on:
-          branch: docker
+          branch: master
     - addons:
         apt:
           sources:
