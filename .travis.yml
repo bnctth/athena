@@ -11,6 +11,8 @@ matrix:
       deploy:
         provider: script
         script: bash docker_push
+        on:
+          branch: docker
     - addons:
         apt:
           sources:
