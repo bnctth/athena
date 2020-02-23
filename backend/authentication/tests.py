@@ -94,12 +94,12 @@ class AuthTests(TestCase):
         devices = c.get(self.getrtpksPath, **{'HTTP_AUTHORIZATION': f'Bearer {at1}'})
         self.assertEqual(devices.status_code, 200)
 
-        def lgtst(path, token1, token2, body={}):
-            response = c.post(path, body, **{'HTTP_AUTHORIZATION': f'Bearer {token1}'})
+        def lgtst(path, token1, token2):
+            response = c.post(path, **{'HTTP_AUTHORIZATION': f'Bearer {token1}'})
             self.assertEqual(response.status_code, 200)
             response = c.get(self.testPath, **{'HTTP_AUTHORIZATION': f'Bearer {token2}'})
             self.assertEqual(response.status_code, 401)
 
-        lgtst(f'{self.logoutPath}/1', at2, at1)
+        lgtst(f'{self.logoutPath}/{devices.json()[0]["pk"]}', at2, at1)
         lgtst(f'{self.logoutPath}/all', at2, at1)
         lgtst(self.logoutPath, at2, at1)
