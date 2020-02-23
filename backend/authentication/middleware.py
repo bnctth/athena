@@ -10,7 +10,4 @@ class AuthMiddleware:
                 request.headers['Authorization'].split(" ")[0] == "Bearer":
             token = request.headers['Authorization'].split(" ")[1]
             user = authenticate(request, token=token)
-            if user is not None:
-                request.user = user
-                request.token = token
         return self.get_response(request)

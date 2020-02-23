@@ -38,6 +38,7 @@ class Login(View):
         return JsonResponse({'error': 'Invalid credentials'}, status=401)
 
 
+# generates an access and a refresh token
 def createTokens(user):
     aID = uuid.uuid4()
     rID = uuid.uuid4()
@@ -57,6 +58,7 @@ def createTokens(user):
     return at, rt, aID, rID
 
 
+# gives new at rt
 class RenewToken(View):
     def post(self, request, *args, **kwargs):
         rt = request.POST.get('refresh_token')
@@ -79,6 +81,50 @@ class RenewToken(View):
         return JsonResponse({'access_token': at, 'expires_in': ATEXP, 'refresh_token': rt})
 
 
+class Logout(View):
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        atm = AccessToken.objects.get(aID=uuid.UUID(request.tokenPayload['jti']))
+        logger.info(f'{request.user} logged out from {RefreshToken.objects.get(aID=atm).deviceName}')
+        atm.delete()
+        return HttpResponse()
+
+
+# get id for log out device
+class GetRTPKs(View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        response = []
+        for rtm in RefreshToken.objects.all():
+            if rtm.aID.user == request.user:
+                response.append({'pk': rtm.pk, 'device_name': rtm.deviceName})
+        return JsonResponse(response, safe=False)
+
+
+# log out a specific device
+class LogoutByRTPK(View):
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        try:
+            rt = RefreshToken.objects.get(pk=pk)
+        except ObjectDoesNotExist:
+            logger.warning(f'from {request.META["REMOTE_ADDR"]} {request.user} tried to log out a device with bad id')
+            return JsonResponse({'error': 'Invalid id'}, status=400)
+        logger.info(f'{request.user} logged out their device: {rt.deviceName}')
+        rt.aID.delete()
+        return HttpResponse()
+
+
+class LogoutEverywhereElse(View):
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        AccessToken.objects.exclude(aID=uuid.UUID(request.tokenPayload['jti'])).delete()
+        logger.info(f'{request.user} logged out from everywhere except {request.META["REMOTE_ADDR"]}')
+        return HttpResponse()
+
+
+# just a simple test function
 class LoginRequiredTest(View):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):

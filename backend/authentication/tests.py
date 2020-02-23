@@ -12,11 +12,14 @@ class AuthTests(TestCase):
     loginPath = '/auth/login'
     renewPath = '/auth/renew'
     testPath = '/auth/loginrequiredtest'
+    logoutPath = '/auth/logout'
+    getrtpksPath = '/auth/getrtpks'
 
     def setUp(self):
         User.objects.create_user('test', password='test')
 
     def test_login(self):
+        print('-' * 15)
         c = Client()
 
         # test wrong method
@@ -43,6 +46,7 @@ class AuthTests(TestCase):
             self.assertEqual(response.status_code, 401)
 
     def test_renew(self):
+        print('-' * 15)
         c = Client()
 
         # get tokens
@@ -80,3 +84,22 @@ class AuthTests(TestCase):
         with freezegun.freeze_time(timezone.now() + timedelta(days=65)):
             response = c.post(self.renewPath, {'refresh_token': rt})
             self.assertEqual(response.status_code, 401)
+
+    def test_logout(self):
+        print('-' * 15)
+        c = Client()
+        at1 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
+        at2 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
+        at3 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
+        devices = c.get(self.getrtpksPath, **{'HTTP_AUTHORIZATION': f'Bearer {at1}'})
+        self.assertEqual(devices.status_code, 200)
+
+        def lgtst(path, token1, token2):
+            response = c.post(path, **{'HTTP_AUTHORIZATION': f'Bearer {token1}'})
+            self.assertEqual(response.status_code, 200)
+            response = c.get(self.testPath, **{'HTTP_AUTHORIZATION': f'Bearer {token2}'})
+            self.assertEqual(response.status_code, 401)
+
+        lgtst(f'{self.logoutPath}/1', at2, at1)
+        lgtst(f'{self.logoutPath}/all', at2, at1)
+        lgtst(self.logoutPath, at2, at1)

@@ -17,6 +17,9 @@ class TokenBackend(BaseBackend):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(pk=payload["userID"])
             if user.is_active and AccessToken.objects.filter(user=user, aID=uuid.UUID(payload['jti'])).exists():
+                request.user = user
+                request.token = token
+                request.tokenPayload = payload
                 return user
         except jwt.ExpiredSignature:
             logger.warning(f'Expired access token provided from {request.META["REMOTE_ADDR"]}')
