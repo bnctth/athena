@@ -124,6 +124,19 @@ class LogoutEverywhereElse(View):
         return HttpResponse()
 
 
+class ChangePassword(View):
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        oldPasswd = request.POST.get("old_password")
+        newPasswd = request.POST.get("new_password")
+        if request.user.check_password(oldPasswd):
+            request.user.set_password(newPasswd)
+            request.user.save()
+            logger.info(f'{request.user} has changed their password from {request.META["REMOTE_ADDR"]}')
+            return HttpResponse()
+        return JsonResponse({'error': 'Incorrect password'}, status=401)
+
+
 # just a simple test function
 class LoginRequiredTest(View):
     @method_decorator(login_required)

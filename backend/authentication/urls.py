@@ -1,7 +1,7 @@
 from django.urls import path
 
 from authentication.views import Login, LoginRequiredTest, RenewToken, Logout, LogoutEverywhereElse, LogoutByRTPK, \
-    GetRTPKs
+    GetRTPKs, ChangePassword
 
 urlpatterns = [
     path('login', Login.as_view()),
@@ -10,5 +10,6 @@ urlpatterns = [
     path('logout', Logout.as_view()),
     path('logout/all', LogoutEverywhereElse.as_view()),
     path('logout/<int:pk>', LogoutByRTPK.as_view()),
+    path('changepassword', ChangePassword.as_view()),
     path('loginrequiredtest', LoginRequiredTest.as_view())
 ]

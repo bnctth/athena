@@ -14,6 +14,7 @@ class AuthTests(TestCase):
     testPath = '/auth/loginrequiredtest'
     logoutPath = '/auth/logout'
     getrtpksPath = '/auth/getrtpks'
+    changepasswordPath = '/auth/changepassword'
 
     def setUp(self):
         User.objects.create_user('test', password='test')
@@ -50,7 +51,7 @@ class AuthTests(TestCase):
         c = Client()
 
         # get tokens
-        response = c.post('/auth/login', {'username': 'test', 'password': 'test'})
+        response = c.post(self.loginPath, {'username': 'test', 'password': 'test'})
         oldat = response.json()['access_token']
         oldrt = response.json()['refresh_token']
 
@@ -103,3 +104,26 @@ class AuthTests(TestCase):
         lgtst(f'{self.logoutPath}/{devices.json()[0]["pk"]}', at2, at1)
         lgtst(f'{self.logoutPath}/all', at2, at1)
         lgtst(self.logoutPath, at2, at1)
+
+    def test_changepassword(self):
+        print('-' * 15)
+        c = Client()
+        headers = {
+            "HTTP_AUTHORIZATION":
+                f"Bearer {c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']}"}
+
+        # test wrong method
+        response = c.get(self.changepasswordPath)
+        self.assertEqual(response.status_code, 405)
+
+        # invalid credentials
+        response = c.post(self.changepasswordPath, **headers)
+        self.assertEqual(response.status_code, 401)
+
+        response = c.post(self.changepasswordPath, {'old_password': 'test', 'new_password': 'foo'}, **headers)
+        self.assertEqual(response.status_code, 200)
+
+        response = c.post(self.loginPath, {'username': 'test', 'password': 'test'})
+        self.assertEqual(response.status_code, 401)
+        response = c.post(self.loginPath, {'username': 'test', 'password': 'foo'})
+        self.assertEqual(response.status_code, 200)

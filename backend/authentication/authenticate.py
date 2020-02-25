@@ -24,7 +24,7 @@ class TokenBackend(BaseBackend):
         except jwt.ExpiredSignature:
             logger.warning(f'Expired access token provided from {request.META["REMOTE_ADDR"]}')
         except (jwt.InvalidAlgorithmError, jwt.InvalidSignatureError, jwt.DecodeError,):
-            logger.warning(f'Invalid access token provided from {request.META["REMOTE_ADDR"]}')
+            logger.error(f'Invalid access token provided from {request.META["REMOTE_ADDR"]}')
         except ObjectDoesNotExist:
             logger.warning(f'Token for non-existent user provided from {request.META["REMOTE_ADDR"]}')
         return None
