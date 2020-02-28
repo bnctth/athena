@@ -2,9 +2,7 @@ import json
 import logging
 from json import JSONDecodeError
 
-from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import AnonymousUser
 
 logger = logging.getLogger(__name__)
 

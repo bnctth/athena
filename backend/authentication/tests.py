@@ -4,8 +4,8 @@ import freezegun
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
-# Create your tests here.
 from django.utils import timezone
+import secrets
 
 
 class AuthTests(TestCase):
@@ -15,9 +15,10 @@ class AuthTests(TestCase):
     logoutPath = '/auth/logout'
     getrtpksPath = '/auth/getrtpks'
     changepasswordPath = '/auth/changepassword'
+    password = secrets.token_hex(10)
 
     def setUp(self):
-        User.objects.create_user('test', password='test')
+        User.objects.create_user('test', password=self.password)
 
     def test_login(self):
         print('-' * 15)
@@ -32,7 +33,7 @@ class AuthTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
         # test good credentials
-        response = c.post(self.loginPath, {'username': 'test', 'password': 'test'})
+        response = c.post(self.loginPath, {'username': 'test', 'password': self.password})
         self.assertEqual(response.status_code, 200)
         at = response.json()['access_token']
 
@@ -51,7 +52,7 @@ class AuthTests(TestCase):
         c = Client()
 
         # get tokens
-        response = c.post(self.loginPath, {'username': 'test', 'password': 'test'})
+        response = c.post(self.loginPath, {'username': 'test', 'password': self.password})
         oldat = response.json()['access_token']
         oldrt = response.json()['refresh_token']
 
@@ -89,9 +90,9 @@ class AuthTests(TestCase):
     def test_logout(self):
         print('-' * 15)
         c = Client()
-        at1 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
-        at2 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
-        at3 = c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']
+        at1 = c.post(self.loginPath, {'username': 'test', 'password': self.password}).json()['access_token']
+        at2 = c.post(self.loginPath, {'username': 'test', 'password': self.password}).json()['access_token']
+        at3 = c.post(self.loginPath, {'username': 'test', 'password': self.password}).json()['access_token']
         devices = c.get(self.getrtpksPath, **{'HTTP_AUTHORIZATION': f'Bearer {at1}'})
         self.assertEqual(devices.status_code, 200)
 
@@ -102,15 +103,15 @@ class AuthTests(TestCase):
             self.assertEqual(response.status_code, 401)
 
         lgtst(f'{self.logoutPath}/{devices.json()[0]["pk"]}', at2, at1)
-        lgtst(f'{self.logoutPath}/all', at2, at1)
-        lgtst(self.logoutPath, at2, at1)
+        lgtst(f'{self.logoutPath}/all', at2, at3)
+        lgtst(self.logoutPath, at2, at2)
 
     def test_changepassword(self):
         print('-' * 15)
         c = Client()
         headers = {
             "HTTP_AUTHORIZATION":
-                f"Bearer {c.post(self.loginPath, {'username': 'test', 'password': 'test'}).json()['access_token']}"}
+                f"Bearer {c.post(self.loginPath, {'username': 'test', 'password': self.password}).json()['access_token']}"}
 
         # test wrong method
         response = c.get(self.changepasswordPath)
@@ -120,10 +121,10 @@ class AuthTests(TestCase):
         response = c.post(self.changepasswordPath, **headers)
         self.assertEqual(response.status_code, 401)
 
-        response = c.post(self.changepasswordPath, {'old_password': 'test', 'new_password': 'foo'}, **headers)
+        response = c.post(self.changepasswordPath, {'old_password': self.password, 'new_password': 'foo'}, **headers)
         self.assertEqual(response.status_code, 200)
 
-        response = c.post(self.loginPath, {'username': 'test', 'password': 'test'})
+        response = c.post(self.loginPath, {'username': 'test', 'password': self.password})
         self.assertEqual(response.status_code, 401)
         response = c.post(self.loginPath, {'username': 'test', 'password': 'foo'})
         self.assertEqual(response.status_code, 200)

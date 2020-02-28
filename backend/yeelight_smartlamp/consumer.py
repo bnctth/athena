@@ -1,9 +1,6 @@
-import json
 import logging
-from json import JSONDecodeError
 
 from channels.generic.websocket import WebsocketConsumer
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser
 
 from backend.consumer_base import receive
