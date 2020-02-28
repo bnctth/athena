@@ -56,4 +56,5 @@ class ChangePassword(View):
             request.user.save()
             logger.info(f'{request.user} has changed their password from {request.META["REMOTE_ADDR"]}')
             return HttpResponse()
+        logger.warning(f'{request.user} tried to change their password unsuccessfully')
         return JsonResponse({'error': 'Incorrect password'}, status=401)

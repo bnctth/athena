@@ -17,16 +17,19 @@ class TokenBackend(BaseBackend):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(pk=payload["userID"])
             if user.is_active and AccessToken.objects.filter(user=user, aID=uuid.UUID(payload['jti'])).exists():
-                request.user = user
-                request.token = token
-                request.tokenPayload = payload
+                if request:
+                    request.user = user
+                    request.token = token
+                    request.tokenPayload = payload
                 return user
         except jwt.ExpiredSignature:
-            logger.warning(f'Expired access token provided from {request.META["REMOTE_ADDR"]}')
+            logger.warning(
+                f'Expired access token provided from {request.META["REMOTE_ADDR"] if request else "Unknown"}')
         except (jwt.InvalidAlgorithmError, jwt.InvalidSignatureError, jwt.DecodeError,):
-            logger.error(f'Invalid access token provided from {request.META["REMOTE_ADDR"]}')
+            logger.error(f'Invalid access token provided from {request.META["REMOTE_ADDR"] if request else "Unknown"}')
         except ObjectDoesNotExist:
-            logger.warning(f'Token for non-existent user provided from {request.META["REMOTE_ADDR"]}')
+            logger.warning(
+                f'Token for non-existent user provided from {request.META["REMOTE_ADDR"] if request else "Unknown"}')
         return None
 
     def get_user(self, user_id):
