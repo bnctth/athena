@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from yeelight_smartlamp.models import Yeelight
+
+admin.site.register(Yeelight)
