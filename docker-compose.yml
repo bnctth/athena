@@ -15,7 +15,7 @@ services:
     volumes:
       - static_volume:/home/athena/web/static
   db:
-    image: postgres:12.0-alpine
+    image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -29,7 +29,7 @@ services:
     volumes:
       - static_volume:/home/athena/web/static
   redis:
-    image: redis:2.8
+    image: redis:5-alpine
     expose:
       - 6379
 
