@@ -3,6 +3,7 @@ matrix:
   include:
     - services:
         - docker
+      arch: arm64
       install:
         - docker build backend/ -t bnctth/athena
         - docker build backend/nginx/ -t bnctth/athena_nginx
