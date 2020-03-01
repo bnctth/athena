@@ -2,13 +2,13 @@ version: '3.7'
 
 services:
   web:
-    image: bnctth/athena
+    build: backend
     command: bash -c "daphne backend.asgi:application -b 0.0.0.0 -p 8001 & gunicorn backend.wsgi:application --bind 0.0.0.0:8000"
-    expose:
-      - 8000
-      - 8001
+    ports:
+      - 8000:8000
+      - 8001:8001
     env_file:
-      - ./.env
+      - ./.env.dev
     depends_on:
       - db
       - redis
@@ -20,18 +20,18 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
+  redis:
+    image: redis:2.8
+    expose: 
+      - 6379
   nginx:
-    image: bnctth/athena_nginx
+    build: backend/nginx
     ports:
       - 80:80
     depends_on:
       - web
     volumes:
       - static_volume:/home/athena/web/static
-  redis:
-    image: redis:2.8
-    expose:
-      - 6379
 
 volumes:
   postgres_data:

@@ -40,7 +40,7 @@ RUN mkdir $ATHENA_HOME/static
 WORKDIR $ATHENA_HOME
 
 # install dependencies
-RUN apk update && apk add libpq
+RUN apk update && apk add libpq bash
 COPY --from=builder /usr/src/athena/wheels /wheels
 COPY --from=builder /usr/src/athena/requirements.txt .
 RUN pip install --upgrade pip
