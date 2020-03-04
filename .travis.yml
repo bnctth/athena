@@ -1,28 +1,13 @@
 language: generic
 jobs:
   include:
-    - if: branch != master
-      services:
+    - services:
         - docker
       install:
         - docker build backend/ -t bnctth/athena
         - docker build backend/nginx/ -t bnctth/athena_nginx
         - docker-compose up -d
       script: docker-compose exec web python manage.py test
-    - if: branch = master
-      services:
-        - docker
-      arch: arm64
-      install:
-        - docker build backend/ -t bnctth/athena
-        - docker build backend/nginx/ -t bnctth/athena_nginx
-        - docker-compose up -d
-      script: docker-compose exec web python manage.py test
-      deploy:
-        provider: script
-        script: bash docker_push
-        on:
-          branch: master
     - addons:
         apt:
           sources:
