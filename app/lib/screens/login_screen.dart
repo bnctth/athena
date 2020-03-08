@@ -6,7 +6,7 @@ import 'package:athena/helpers/network_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:validators/validators.dart';
 
-class LoginScreen extends StatelessWidget{
+class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
@@ -16,8 +16,7 @@ class LoginScreen extends StatelessWidget{
           children: [
             CustomPaint(
               painter: Triangle(),
-              size: Size(
-                  double.infinity, MediaQuery.of(context).size.height / 10),
+              size: Size(double.infinity, 80),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
