@@ -28,3 +28,6 @@ flutter:
     - family: Library 3 am
       fonts:
         - asset: assets/fonts/Library 3 am.otf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Light.ttf

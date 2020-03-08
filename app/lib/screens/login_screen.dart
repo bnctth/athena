@@ -33,10 +33,15 @@ class LoginScreen extends StatelessWidget {
                         color: kMainColor,
                       ),
                     ),
-                    SizedBox(height: 50,),
+                    SizedBox(
+                      height: 50,
+                    ),
+
+//                    username
                     TextFormField(
                       decoration: loginTextFieldDecoration(L.map['username']),
                       autocorrect: false,
+                      style: kTextFieldStyle,
                       validator: (value) {
                         if (value.isEmpty) {
                           return L.map['nousername'];
@@ -47,8 +52,11 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+
+//                    password
                     TextFormField(
                       decoration: loginTextFieldDecoration(L.map['password']),
+                      style: kTextFieldStyle,
                       obscureText: true,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -60,8 +68,11 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+
+//                    hostname
                     TextFormField(
                       decoration: loginTextFieldDecoration(L.map['hostname']),
+                      style: kTextFieldStyle,
                       keyboardType: TextInputType.url,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -75,6 +86,8 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+
+//                    submit button
                     RaisedButton(
                       color: kMainColor,
                       shape: RoundedRectangleBorder(
