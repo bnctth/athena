@@ -11,13 +11,12 @@ class L {
 
   factory L() => instance;
 
-  L._private() {
-    setLang();
-  }
+  L._private();
 
-  void setLang() async {
+  Future<void> setLang() async {
     switch ((await SharedPreferences.getInstance()).getString('language') ??
         'eng') {
+//      TODO get device language
       case 'hun':
         lang = Language.Hungarian;
         break;
@@ -34,17 +33,17 @@ class L {
     'nopassword': 'Please enter your password',
     'hostname': 'Hostname',
     'nohostname': 'Please enter the hostname of your hub',
-    'invalidhostname':'Please enter a valid hostname',
+    'invalidhostname': 'Please enter a valid hostname',
     'login': 'Log in',
   };
   static const Hungarian = {
     'username': 'Felhasználónév',
-    'nousername':'Kérlek, add meg a felhasználóneved',
+    'nousername': 'Kérlek, add meg a felhasználóneved',
     'password': 'Jelszó',
-    'nopassword':'Kérlek, add meg a jelszavadat',
+    'nopassword': 'Kérlek, add meg a jelszavadat',
     'hostname': 'Webcím',
-    'nohostname':'Kérlek, add meg a hub eszközöd webcímét',
-    'invalidhostname':'Kérlek egy valós webcímet adj meg',
+    'nohostname': 'Kérlek, add meg a hub eszközöd webcímét',
+    'invalidhostname': 'Kérlek egy valós webcímet adj meg',
     'login': 'Bejelentkezés',
   };
 
