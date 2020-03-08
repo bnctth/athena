@@ -35,4 +35,7 @@ InputDecoration loginTextFieldDecoration(String hintText) => InputDecoration(
       errorStyle: TextStyle(fontSize: 15),
     );
 
-const kMainColor=Color(0xFFf6d309);
+const kMainColor = Color(0xFFf6d309);
+
+const kTextFieldStyle =
+    TextStyle(color: Colors.white, fontFamily: 'Montserrat');
