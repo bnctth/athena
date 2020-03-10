@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:validators/validators.dart';
 
 class LoginScreen extends StatelessWidget {
+  String username = '', password = '', host = '';
+
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
@@ -51,6 +53,9 @@ class LoginScreen extends StatelessWidget {
                             }
                             return null;
                           },
+                          onChanged: (String s) {
+                            username = s;
+                          },
                         ),
                         SizedBox(
                           height: 20,
@@ -67,6 +72,9 @@ class LoginScreen extends StatelessWidget {
                               return L.map['nopassword'];
                             }
                             return null;
+                          },
+                          onChanged: (String s) {
+                            password = s;
                           },
                         ),
                         SizedBox(
@@ -87,6 +95,9 @@ class LoginScreen extends StatelessWidget {
                             }
                             return null;
                           },
+                          onChanged: (String s) {
+                            host = s;
+                          },
                         ),
                         SizedBox(
                           height: 20,
@@ -101,7 +112,11 @@ class LoginScreen extends StatelessWidget {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
-                              if ((await NetworkHelper.instance.login()) ==
+                              if ((await NetworkHelper.instance.login(
+                                    username: username,
+                                    password: password,
+                                    host: host,
+                                  )) ==
                                   Status.authenticated) {
                                 Navigator.popAndPushNamed(context, '/loading');
                               }

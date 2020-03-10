@@ -17,17 +17,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
     load();
   }
 
-  void load() async{
+  void load() async {
     await L.instance.setLang();
-    switch(await NetworkHelper.instance.checkStatus){
+    switch (await NetworkHelper.instance.checkStatus) {
       case Status.authenticated:
+        Navigator.popAndPushNamed(context, '/');
         break;
       case Status.unauthenticated:
         Navigator.popAndPushNamed(context, '/login');
         break;
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
