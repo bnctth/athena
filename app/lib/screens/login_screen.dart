@@ -3,7 +3,9 @@ import 'package:athena/elements/background.dart';
 import 'package:athena/elements/triangle.dart';
 import 'package:athena/helpers/language_helper.dart';
 import 'package:athena/helpers/network_helper.dart';
+import 'package:athena/models/triangle_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:validators/validators.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -16,10 +18,6 @@ class LoginScreen extends StatelessWidget {
       body: Background(
         child: Stack(
           children: [
-            CustomPaint(
-              painter: Triangle(),
-              size: Size(double.infinity, 80),
-            ),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -104,42 +102,58 @@ class LoginScreen extends StatelessWidget {
                         ),
 
 //                    submit button
-                        RaisedButton(
-                          color: kMainColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            side: BorderSide.none,
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState.validate()) {
-                              if ((await NetworkHelper.instance.login(
-                                    username: username,
-                                    password: password,
-                                    host: host,
-                                  )) ==
-                                  Status.authenticated) {
-                                Navigator.popAndPushNamed(context, '/loading');
+                        Builder(
+                          builder: (context) => RaisedButton(
+                            color: kMainColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              side: BorderSide.none,
+                            ),
+                            onPressed: () async {
+                              if (_formKey.currentState.validate()) {
+                                Provider.of<TriangleAnimation>(context,
+                                        listen: false)
+                                    .notify(true);
+                                Status resp =
+                                    await NetworkHelper.instance.login(
+                                  username: username,
+                                  password: password,
+                                  host: host,
+                                );
+                                if (resp == Status.authenticated) {
+                                  Navigator.popAndPushNamed(
+                                      context, '/loading');
+                                } else {
+                                  Provider.of<TriangleAnimation>(context,
+                                          listen: false)
+                                      .notify(false);
+                                  if (resp == Status.unknownHost)
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text(L.map['unknownhost']),
+                                    ));
+                                }
                               }
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  L.map['login'],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    L.map['login'],
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                    ),
                                   ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.white,
-                                )
-                              ],
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         )
@@ -149,6 +163,7 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
             ),
+            Triangle(),
           ],
         ),
       ),

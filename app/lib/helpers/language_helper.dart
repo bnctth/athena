@@ -35,6 +35,8 @@ class L {
     'nohostname': 'Please enter the hostname of your hub',
     'invalidhostname': 'Please enter a valid hostname',
     'login': 'Log in',
+    'unknownhost':
+        'At this minute connecting to the given hostname was not possible',
   };
   static const Hungarian = {
     'username': 'Felhasználónév',
@@ -45,6 +47,7 @@ class L {
     'nohostname': 'Kérlek, add meg a hub eszközöd webcímét',
     'invalidhostname': 'Kérlek egy valós webcímet adj meg',
     'login': 'Bejelentkezés',
+    'unknownhost': 'Jelen pillanatban a megadott webcím nem elérhető'
   };
 
   static Map<String, String> get map {

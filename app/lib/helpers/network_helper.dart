@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-enum Status { authenticated, unauthenticated }
+enum Status { authenticated, unauthenticated, unknownHost }
 enum Method { get, post }
 
 class NetworkHelper {
@@ -17,16 +17,18 @@ class NetworkHelper {
 
   DateTime renewNeededAt = DateTime.now();
   final ss = new FlutterSecureStorage();
+  SharedPreferences sp;
 
   factory NetworkHelper() => instance;
 
 //  check if saved tokens exists and tries to renew
   Future<Status> get checkStatus async {
+    sp = await SharedPreferences.getInstance();
     _at = await ss.read(key: 'access_token');
     _rt = await ss.read(key: 'refresh_token');
-    _host = (await SharedPreferences.getInstance()).getString('host');
-    if (_at == null || _rt == null || _host == null)
-      return Status.unauthenticated;
+    _host = sp.getString('host');
+    if (_host == null) return Status.unknownHost;
+    if (_at == null || _rt == null) return Status.unauthenticated;
     if (await _renew()) return Status.authenticated;
     return Status.unauthenticated;
   }
@@ -50,19 +52,41 @@ class NetworkHelper {
   Future<Status> login({String username, String password, String host}) async {
     if (host.substring(0, 3) != 'http') host = 'http://$host';
     _host = host;
-    (await SharedPreferences.getInstance()).setString('host', _host);
+    sp.setString('host', _host);
     http.Response response = await _request('/auth/login', Method.post,
         body: {'username': username, 'password': password},
         isAuthenticated: false);
     if (response.statusCode == 200) {
-      Map<String, dynamic> decoded = jsonDecode(response.body);
+      Map<String, dynamic> decoded;
+      try {
+        decoded = jsonDecode(response.body);
+      } catch (e) {
+        print(e);
+        return Status.unknownHost;
+      }
       _at = decoded['access_token'];
       _rt = decoded['refresh_token'];
       ss.write(key: 'access_token', value: _at);
       ss.write(key: 'refresh_token', value: _rt);
       return Status.authenticated;
     }
+    else if(response.statusCode==410){
+      return Status.unknownHost;
+    }
     return Status.unauthenticated;
+  }
+
+  Future<Status> logout({bool forgetHost = true}) async {
+    http.Response response = await _request('/auth/logout', Method.post);
+    if (response.statusCode == 200) {
+      ss.delete(key: 'access_token');
+      ss.delete(key: 'refresh_token');
+      if (forgetHost) {
+        sp.remove('host');
+        return Status.unknownHost;
+      }
+      return Status.unauthenticated;
+    }
   }
 
   Future<http.Response> _request(String path, Method method,
