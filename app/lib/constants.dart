@@ -39,3 +39,5 @@ const kMainColor = Color(0xFFf6d309);
 
 const kTextFieldStyle =
     TextStyle(color: Colors.white, fontFamily: 'Montserrat');
+
+const kTriangleHeight = 80;
