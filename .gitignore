@@ -181,3 +181,6 @@ doc/api/
 *.app
 
 .idea/
+
+key.properties
+.flutter-plugins-dependencies
