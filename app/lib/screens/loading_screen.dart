@@ -23,6 +23,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       case Status.authenticated:
         Navigator.popAndPushNamed(context, '/');
         break;
+      case Status.unknownHost:
       case Status.unauthenticated:
         Navigator.popAndPushNamed(context, '/login');
         break;
