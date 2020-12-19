@@ -33,6 +33,6 @@ service-identity==18.1.0
 six==1.14.0
 sqlparse==0.3.1
 Twisted==19.10.0
-txaio==20.1.1
+txaio==20.12.1
 yeelight==0.5.1
 zope.interface==4.7.2
